@@ -1,5 +1,5 @@
 module.exports = {
-    name: "cock",
+    name: "testEvent",
     modOnly: true,
     
     

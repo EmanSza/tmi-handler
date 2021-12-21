@@ -1,5 +1,5 @@
 module.exports = {
-    name: "penis",
+    name: "test2",
     
     
     execute: async function() {
