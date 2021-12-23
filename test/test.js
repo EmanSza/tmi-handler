@@ -1,8 +1,6 @@
-const tmiClient = require('tmi.js');
+const tmi = require('tmi.js');
 const twitchWrapper = require('../src/index.js')
-console.log(tmiClient)
-    new twitchWrapper(tmiClient,
-        {
+    new twitchWrapper(tmi, {
             channels: ['#test'],
             username: 'test',
             password: 'test',
