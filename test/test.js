@@ -4,7 +4,7 @@ const twitchWrapper = require('../src/index.js')
             channels: ['#test'],
             username: 'test',
             password: 'test',
-            debug: true,
+            debug: false,
             filePath: '/commands/',
             commandPath: '/test/commands',
             eventPath:   '/test/events',

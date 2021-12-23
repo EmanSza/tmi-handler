@@ -55,9 +55,7 @@ module.exports =  class TwitchWrapper{
             },
             channels: this.channels
         });
-        // if(this.loadFinished === true){
-        // client.connect().then(() => { log.login(this.username); });
-        // }
+        client.connect().then(() => { log.login(this.username); });
 
         client.on('message', (channel, userstate, message, self) => {
             if (self) return;
