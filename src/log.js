@@ -22,7 +22,7 @@ module.exports = class log {
     login(message) {
         if(!message) message = 'Logged In'
         // Create a new log message with the bot name being purple and bold, and the message being green and bold.
-        console.log(this.colors.purple + this.botName + this.colors.green + "Logged In" + "\x1b[0m");
+        console.log(this.colors.purple + this.botName + this.colors.green + ": Logged In" + "\x1b[0m");
     }
 
     loaded(type, fileName) {
@@ -33,6 +33,9 @@ module.exports = class log {
         if(this.total === null)  return console.error('Total is not defined');
         console.log(this.colors.purple + "Total " + type + " Loaded: " + this.colors.green + total + "\x1b[0m");
     }
-
+    error(type, message, fileName) {
+        if(this.fileName === null)  return console.error('File name is not defined');
+        console.log(this.colors.red + "Error: " + this.colors.yellow + fileName + this.colors.red + ": " + this.colors.yellow + message + "\x1b[0m");
+    }
     // End Of Class
 }

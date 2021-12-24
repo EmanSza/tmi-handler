@@ -18,11 +18,11 @@ module.exports =  class TwitchWrapper{
         this.commands = [];
         this.events = [];
         this.eventTypes = [
-            'action', 'anongiftpaidupgrade', 'ban', 'chat', 'Cheer', 'Clearchat', 'Connected', 'Connecting',
-            'Disconnected', 'Emoteonly', 'Emotesets', 'Followersonly','Giftpaidupgrade', 'Hosted', 'Hosting', 'Join', 'Logon',
-            'Message', 'Messagedeleted', 'Mod', 'Mods', 'Notice', 'Part', 'Ping', 'Pong', 'R9kbeta', 'Raided', 'Raw_message',
-            'Reconnect', 'Resub', 'Roomstate', 'Serverchange', 'Slowmode', 'Subgift', 'Submysterygift', 'Subscribers',
-            'Subscription', 'Timeout', 'Unhost', 'Unmod', 'VIPs', 'Whisper',
+            'action', 'anongiftpaidupgrade', 'ban', 'chat', 'cheer', 'clearchat', 'connected', 'connecting',
+            'cisconnected', 'emoteonly', 'emotesets', 'followersonly','giftpaidupgrade', 'Hosted', 'hosting', 'join', 'logon',
+            'message', 'messagedeleted', 'mod', 'mods', 'Notice', 'part', 'ping', 'pong', 'r9kbeta', 'saided', 'raw_message',
+            'reconnect', 'resub', 'roomstate', 'serverchange', 'slowmode', 'subgift', 'submysterygift', 'subscribers',
+            'subscription', 'timeout', 'unhost', 'unmod', 'VIPs', 'whisper',
         ]
         this.cLog = new log({ botName: this.username });
         this.loadCommands(this.commandPath, this.cLog);
@@ -55,14 +55,53 @@ module.exports =  class TwitchWrapper{
             },
             channels: this.channels
         });
-        client.connect().then(() => { log.login(this.username); });
+        
+        client.connect().then(() => { this.cLog.login(this.username) });
 
+        // EVENTS
         client.on('message', (channel, userstate, message, self) => {
-            if (self) return;
-            this.message( channel, userstate, message, self );
-        }); 
-        // Make Event Handler for events in the eventTypes array
-    }
+            if (this.selfDetection && self) return;
+            this.message( { client, channel, userstate, message, self } );
+        });
+        // For all Events, use eventlload the event and run it
+        this.events.forEach(event => {
+            client.on(event.name, ( channel, userstate, client, self, username, reason, message, deletedMessage, msgid, messageCloned, address, port, enabled, sets, obj, sender, viewers, autohost, mods, latency, streakMonths, methods, state, length, recipent, numOfSubs, duration, vips, from,) => {
+                if(this.selfDetection && self) return;
+                event.execute({
+                    channel,
+                    userstate,
+                    client,
+                    self,
+                    username,
+                    reason,
+                    message,
+                    deletedMessage,
+                    msgid,
+                    messageCloned,
+                    address,
+                    port,
+                    enabled,
+                    sets,
+                    obj,
+                    sender,
+                    viewers,
+                    autohost,
+                    mods,
+                    latency,
+                    streakMonths,
+                    methods,
+                    state,
+                    length,
+                    recipent,
+                    numOfSubs,
+                    duration,
+                    vips,
+                    from,
+                });
+            });
+        }
+    )};
+
     loadCommands (commandPath, log) {
         let i = 0;
         // Create a for loop that counts the amount of files in the directory
@@ -79,7 +118,7 @@ module.exports =  class TwitchWrapper{
         }
         log.totalLoaded("Commands", i);
     }
-    loadEvents(eventPath, log, eventTypes) {
+    loadEvents(eventPath, log) {
         // Events Will be handled by name of the file, so if you have a file called test.js, it will be called test
         let i = 0;
         let files = fs.readdirSync(path.resolve(process.cwd() + eventPath), { withFileTypes: true });
@@ -94,26 +133,38 @@ module.exports =  class TwitchWrapper{
                     name: file.name.split('.')[0],
                     execute: event.execute
                 }
-                this.events.push( eventObj );
-                log.loaded("Event", eventObj.name);
+                // If the file name is in the eventTypes array, run the event
+                if (this.eventTypes.includes(eventObj.name)) {
+                    this.events.push(eventObj);
+                    log.loaded("Event",eventObj.name);
+                } else {
+                    log.error("Event", "Does Not Match a Event Type ",eventObj.name);
+                    i--;
+                }
             }
         }
         log.totalLoaded("Events", i);
     }
 
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
-    message(channel, userstate, message, self ) {
-        if (message.message[0] === '!') {
-            let command = message.message.substring(1);
+    message(channel, userstate, message, self, client ) {
+            if(message[0] === '!') {
+                console.log(message[0])
+            let command = message.substring(1);
             let commandSplit = command.split(' ');
             let commandName = commandSplit[0];
             let commandArgs = commandSplit.slice(1);
             this.commands.forEach(command => {
                 if (command.name === commandName) {
-                    command.run(channel, userstate, message, self, commandArgs);
+                    console.log(command)
+                    if(command.modOnly && !userstate.mod) {
+                        client.say(channel, 'You do not have permission to use this command');
+                        return;
+                    }
+                    command.execute(channel, userstate, message, self, commandArgs, client);
                 }
             });
-        }
+            }
     }
     // Is the channel gets a subscriber run code that will run the event 
     subscriber(channel, userstate) {
@@ -124,5 +175,3 @@ module.exports =  class TwitchWrapper{
         });
     }   
     };
-// make a aysnc class
-
