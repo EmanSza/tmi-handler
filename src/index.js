@@ -71,21 +71,14 @@ module.exports =  class TwitchWrapper{
             if (this.selfDetection && self) return;
             this.message( { client, channel, userstate, message, self } );
         });
-        // For all Events, use eventlload the event and run it
+        // For each event go through the eventTypes array and run the event function
         this.events.forEach(event => {
-            // If the event is a function, run it
-            client.on(event.name, ( channel, userstate, client, self, username, reason, message, deletedMessage, msgid, messageCloned, address, port, enabled, sets, obj, sender, viewers, autohost, mods, latency, streakMonths, methods, state, length, recipent, numOfSubs, duration, vips, from,) => {
-                if(this.selfDetection && self) return;
-                // Run the event with the parameters passed in the event object
-                event.execute({
-                    channel,userstate, client,
-                    self, username, reason, message, deletedMessage, msgid, messageCloned,
-                    address, port, enabled, sets, obj, sender, viewers, autohost, mods, latency,
-                    streakMonths, methods, state, length, recipent, numOfSubs, duration, vips, from,
-                });
+            client.on(event.name, (...args) => {
+                event.execute(...args);
             });
-        }
-    )};
+        });
+        // End of Constructor
+    }
 
     loadCommands (commandPath, log,) {
         let i = 0;
