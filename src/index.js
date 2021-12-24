@@ -82,7 +82,6 @@ module.exports =  class TwitchWrapper{
         let i = 0;
         // Create a for loop that counts the amount of files in the directory
         let files = fs.readdirSync(path.resolve(process.cwd() + commandPath), { withFileTypes: true });
-        console.log(process.cwd() + commandPath);
         for(i = 0; i < files.length; i++);
         // Create a for loop that counts the amount of files in the directory
         for (const file of files) {
