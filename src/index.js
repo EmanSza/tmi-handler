@@ -4,6 +4,7 @@ const log = require('./log');
 //Call super 
 module.exports =  class TwitchWrapper{
     constructor(tmi, options) {
+        // Constructor Options
         this.tmi = tmi;
         this.options = options;
         this.commandPath = options.commandPath || '/commands';
@@ -16,8 +17,11 @@ module.exports =  class TwitchWrapper{
         this.password = options.password;
         this.selfDetection = options.selfDetection || true;
         this.prefix = options.prefix || '!';
+        // The commands array will hold all the commands that are loaded
         this.commands = [];
+        // The events array will hold all the events that are loaded
         this.events = [];
+        // a array of event types that will be loaded
         this.eventTypes = [
             'action', 'anongiftpaidupgrade', 'ban', 'chat', 'cheer', 'clearchat', 'connected', 'connecting',
             'cisconnected', 'emoteonly', 'emotesets', 'followersonly','giftpaidupgrade', 'Hosted', 'hosting', 'join', 'logon',
@@ -50,24 +54,29 @@ module.exports =  class TwitchWrapper{
         }
         const client = new tmi.client({
             options: { debug: this.debug },
+            // Identify the bot
             identity: {
                 username: this.username,
                 password: this.password
             },
+            // Connect to the channels
             channels: this.channels
         });
-        
+        // Connect to Twitch IRC Server and log the connection
         client.connect().then(() => { this.cLog.login(this.username) });
 
-        // EVENTS
+        // When a message is recieved, run the message function
         client.on('message', (channel, userstate, message, self) => {
+            // if self is true and selfDetection is true, run the message function
             if (this.selfDetection && self) return;
             this.message( { client, channel, userstate, message, self } );
         });
         // For all Events, use eventlload the event and run it
         this.events.forEach(event => {
+            // If the event is a function, run it
             client.on(event.name, ( channel, userstate, client, self, username, reason, message, deletedMessage, msgid, messageCloned, address, port, enabled, sets, obj, sender, viewers, autohost, mods, latency, streakMonths, methods, state, length, recipent, numOfSubs, duration, vips, from,) => {
                 if(this.selfDetection && self) return;
+                // Run the event with the parameters passed in the event object
                 event.execute({
                     channel,userstate, client,
                     self, username, reason, message, deletedMessage, msgid, messageCloned,
@@ -78,19 +87,43 @@ module.exports =  class TwitchWrapper{
         }
     )};
 
-    loadCommands (commandPath, log) {
+    loadCommands (commandPath, log,) {
         let i = 0;
         // Create a for loop that counts the amount of files in the directory
         let files = fs.readdirSync(path.resolve(process.cwd() + commandPath), { withFileTypes: true });
-        for(i = 0; i < files.length; i++);
-        // Create a for loop that counts the amount of files in the directory
+        // Loops through the files
         for (const file of files) {
+            // If the File is a file, run the command
             if (file.isFile()) {
+                // require the file so we can get the command object
                 let command = require(path.resolve(process.cwd() + commandPath + '/' + file.name));
+                // Push the command into the commands array
                 this.commands.push(command);
+                // Add up i to the amount of files from the scoped i variable
+                i++
+                // Log the Command being pushed into the array
                 log.loaded("Command",command.name);
+            } 
+        }
+        // Find all the sub directories
+        for(const sub of files) {
+            // if the sub is a directory and not a file 
+            if(sub.isDirectory()) {
+                // Read the files in the directory
+                let subFiles = fs.readdirSync(path.resolve(process.cwd() + commandPath + '/' + sub.name + '/' ), { withFileTypes: true} );
+                for(const subFile of subFiles) {
+                    // require the file
+                    let command = require(path.resolve(process.cwd() + commandPath + '/' + sub.name + '/' + subFile.name));
+                    // Push the command into the commands array
+                    this.commands.push(command)
+                    // Add up i to the amount of files from the scoped i variable
+                    i++
+                    // Log the Command being pushed into the array
+                    log.loaded("Command",command.name);
+                }
             }
         }
+
         log.totalLoaded("Commands", i);
     }
     loadEvents(eventPath, log) {
@@ -122,22 +155,30 @@ module.exports =  class TwitchWrapper{
 
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
     message(channel, userstate, message, self, client ) {
-            if(message[0] === this.prefix) {
-            let command = message.substring(1).toLowerCase();
-            let commandSplit = command.split(' ');
-            let commandName = commandSplit[0];
-            let commandArgs = commandSplit.slice(1);
+        // If the 1st character of the message is a the prefix, run the command
+        if(message[0] === this.prefix) {
+        // Substring the message to remove the prefix
+        let command = message.substring(1).toLowerCase();
+        // Split the message into an array
+        let commandSplit = command.split(' ');
+        // Get the command name
+        let commandName = commandSplit[0];
+        // Get the command arguments
+        let commandArgs = commandSplit.slice(1);
+        // get each command in the commands array
             this.commands.forEach(command => {
+            // If the called command name is the same as the command name in the command object, run the command
                 if (command.name === commandName) {
-                    console.log(command)
+                    // If the command is mod only and the user is not a mod, return the message
                     if(command.modOnly && !userstate.mod) {
                         client.say(channel, 'You do not have permission to use this command');
                         return;
                     }
-                    command.execute( { channel, userstate, message, self, commandArgs, client });
+                    // Run the command with the arguments
+                command.execute( { channel, userstate, message, self, commandArgs, client });
                 }
             });
-            }
+        }
     }
       
-    };
+};
