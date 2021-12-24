@@ -1,4 +1,4 @@
-This is a Light Weight Handler for TMI.js, This Module Offers the following
+This is a Light Weight Handler for TMI.js, This handler Offers the following
 
 (Its so lightweight it doesnt have any dependencys)
 
@@ -8,21 +8,21 @@ This is a Light Weight Handler for TMI.js, This Module Offers the following
 
 Everything is custom built in this package
 
-Stuff the Module Handles
+Stuff the handler Handles
 
 - Login/Connection
 
 ## Getting Started
 
-This Module is all built into a class, so we need to initialise it!
+This handler is all built into a class, so we need to initialise it!
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
 // Now Let us input the options into the class
 // Please note that tmi is required
-const tmiModuleHandler = new tmiModule (tmi, {
-    // All Options besides tmiModule are inputed within a object
+const tmiHandlerHandler = new tmiHandler (tmi, {
+    // All Options besides tmiHandler are inputed within a object
             // Most options are the options that tmi Asks for, options like commandPath, and eventPath are all custon options,
             // More information will be within the documentation below
             channels: ['#test'],
@@ -69,8 +69,8 @@ const tmiModuleHandler = new tmiModule (tmi, {
 ```js
 
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
-const tmiModuleHandler = new tmiModule (tmi)
+const tmiHandler = require('tmi-handler');
+const tmiHandlerHandler = new tmiHandler (tmi)
 ```
 
 ## Channels Paramater
@@ -78,9 +78,9 @@ const tmiModuleHandler = new tmiModule (tmi)
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     channels : ["Array", "Of", "Channel", "Names"]
 })
 ```
@@ -93,9 +93,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     commandPath: '/src/commands/'
 })
 ```
@@ -109,9 +109,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     commandPath: '/src/events/'
 })
 ```
@@ -120,9 +120,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     debug: true
 })
 ```
@@ -131,9 +131,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     prefix: "?"
 })
 ```
@@ -142,9 +142,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     contentCreator: true
 })
 ```
@@ -153,9 +153,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     reconnect: true
 })
 ```
@@ -164,9 +164,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     channels: ["twitch"]
 })
 ```
@@ -175,9 +175,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     username: 'twitch'
 })
 ```
@@ -186,9 +186,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     password: 'oauth:398b49348fdsk423'
 })
 ```
@@ -197,9 +197,9 @@ const tmiModuleHandler = new tmiModule (tmi. {
 
 ```js
 const tmi = require('tmi.js')
-const tmiModule = require('tmi-module');
+const tmiHandler = require('tmi-handler');
 
-const tmiModuleHandler = new tmiModule (tmi. {
+const tmiHandlerHandler = new tmiHandler (tmi, {
     selfDetection: true
 })
 ```

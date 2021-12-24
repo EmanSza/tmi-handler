@@ -1,5 +1,5 @@
 {
-  "name": "tmi-module",
+  "name": "tmi-handler",
   "version": "1.0.2",
   "description": "",
   "main": "./src/index.js",
@@ -20,9 +20,9 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/EmanSza/tmi-module"
+    "url": "https://github.com/EmanSza/tmi-handler.git"
   },
   "bugs": {
-    "url": "https://github.com/EmanSza/tmi-module/issues"
+    "url": "https://github.com/EmanSza/tmi-handler/issues"
   }
 }
