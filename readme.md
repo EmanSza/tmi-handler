@@ -57,6 +57,7 @@ const tmiModuleHandler = new tmiModule (tmi, {
 |   eventPath   |   String      |  Object       |     false Defaults to /events    |
 |    username   |   String      |  Object       |     true     |
 |   password    |   String      |  Object       |     true     |
+|     prefix    |   String      |  Object       |     false Defaults to !          |
 |     debug     |   Boolean     |  Object       |     false Defaults to false      |
 | contentCreator|   Boolean     |  Object       |     false Defaults to false      |
 |   reconnect   |   Boolean     |  Object       |     false Defaults to false      |
@@ -123,6 +124,17 @@ const tmiModule = require('tmi-module');
 
 const tmiModuleHandler = new tmiModule (tmi. {
     debug: true
+})
+```
+## Prefix Paramater
+``prefix`` -  Enables or disables tmi.js debugging
+
+```js
+const tmi = require('tmi.js')
+const tmiModule = require('tmi-module');
+
+const tmiModuleHandler = new tmiModule (tmi. {
+    prefix: "?"
 })
 ```
 ## Content Creator Paramater

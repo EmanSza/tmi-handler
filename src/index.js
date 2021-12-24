@@ -15,6 +15,7 @@ module.exports =  class TwitchWrapper{
         this.username = options.username;
         this.password = options.password;
         this.selfDetection = options.selfDetection || true;
+        this.prefix = options.prefix || '!';
         this.commands = [];
         this.events = [];
         this.eventTypes = [
@@ -123,7 +124,7 @@ module.exports =  class TwitchWrapper{
 
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
     message(channel, userstate, message, self, client ) {
-            if(message[0] === '!') {
+            if(message[0] === this.prefix) {
                 console.log(message[0])
             let command = message.substring(1);
             let commandSplit = command.split(' ');
