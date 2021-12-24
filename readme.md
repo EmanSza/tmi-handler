@@ -1,5 +1,3 @@
-## tmi-module
-
 This is a Light Weight Handler for TMI.js, This Module Offers the following
 
 (Its so lightweight it doesnt have any dependencys)
@@ -15,7 +13,6 @@ Stuff the Module Handles
 - Login/Connection
 
 ## Getting Started
-** Please Note That this package is not finished yet **
 
 This Module is all built into a class, so we need to initialise it!
 ```js
