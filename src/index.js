@@ -137,7 +137,7 @@ module.exports =  class TwitchWrapper{
                         client.say(channel, 'You do not have permission to use this command');
                         return;
                     }
-                    command.execute(channel, userstate, message, self, commandArgs, client);
+                    command.execute( { channel, userstate, message, self, commandArgs, client });
                 }
             });
             }
