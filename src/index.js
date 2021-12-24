@@ -103,10 +103,9 @@ module.exports =  class TwitchWrapper{
         
         for (const file of files) {
             if (file.isFile()) {
-                // console.log(file.name);
                 let event = require(path.resolve(process.cwd() + eventPath + '/' + file.name));
                 const eventObj = {
-                    name: file.name.split('.')[0],
+                    name: file.name.split('.')[0].toLowerCase(),
                     execute: event.execute
                 }
                 // If the file name is in the eventTypes array, run the event
@@ -125,8 +124,7 @@ module.exports =  class TwitchWrapper{
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
     message(channel, userstate, message, self, client ) {
             if(message[0] === this.prefix) {
-                console.log(message[0])
-            let command = message.substring(1);
+            let command = message.substring(1).toLowerCase();
             let commandSplit = command.split(' ');
             let commandName = commandSplit[0];
             let commandArgs = commandSplit.slice(1);
@@ -142,12 +140,5 @@ module.exports =  class TwitchWrapper{
             });
             }
     }
-    // Is the channel gets a subscriber run code that will run the event 
-    subscriber(channel, userstate) {
-        this.events.forEach(event => {
-            if (event.name === 'subscriber') {
-                event.run(channel, userstate);
-            }
-        });
-    }   
+      
     };

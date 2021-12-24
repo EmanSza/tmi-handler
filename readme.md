@@ -203,7 +203,36 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
     selfDetection: true
 })
 ```
+# Command Files
+Command Files are designed to be flexible on your side
+```js
+// Inside your command folder create a command file called whatever
+module.exports = {
+    // Name is what ur command name will be called by, so here !ping will call this command
+    name : "ping",
+    // If the command can be used by only moderators or not
+    modOnly : false;
 
+    // Now we will write the bit that will actually execute the code
+    execute(client, channel, userstate, message, self, commandArgs) {
+        // Now we will simply tell the bot to send a message
+        client.say(channel, "Pong!");
+    }
+    // Congrats you just made a command!
+}
+```
+# Event Files
+Events are ran by file name. this is in order to prevent mutiple files with the same events.
+```js
+module.exports = {
+    // As the paramaters we support all the params in our Event Paramaters Section
+    execute(channel, username, userstate) {
+        // Now we will write a simple message out saying who was banned!
+        client.say(channel, `${username} Was Banned!`)
+    }
+    // Congrats you just made a event
+}
+```
 # Command Paramaters
 - channel
 - userstate
