@@ -37,27 +37,20 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 })
     // Now we Run the functions to load commands and events
     .loadCommands("/src/commands")
-    .loadEvents("/src/events)
+    .loadEvents("/src/events")
 ```
 
 # Documentation
-## Table of Contents  
-[General Documention](#class-constructor-options)   
-[Commands and Events](#commands_and_events)  
-[Command Paramaters](#command-paramaters)   
-[Events](#events)   
-[Event Paramaters](#event-paramaters)
-
 
 ##### Class Constructor Options
 
 |    Options    |      Value    |     Within    |   Required    |
 | ------------- | ------------- | ------------- | ------------- |
 |     tmi       |   tmi Package |  Paramater    |     true     |
-|   Channels    |   Array       |  Object       |     false Default to []          |
 |    username   |   String      |  Object       |     true     |
 |   password    |   String      |  Object       |     true     |
 |     prefix    |   String      |  Object       |     false Defaults to !          |
+|   Channels    |   Array       |  Object       |     false Default to []          |
 |     debug     |   Boolean     |  Object       |     false Defaults to false      |
 | contentCreator|   Boolean     |  Object       |     false Defaults to false      |
 |   reconnect   |   Boolean     |  Object       |     false Defaults to false      |
@@ -178,7 +171,7 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
     selfDetection: true
 })
 ```
-# Command and Events
+# Loading Command and Events
 Loading Commands and Events
 
 ## load Commands Function
@@ -196,7 +189,7 @@ const tmiHandlerHandler = new tmiHandler (tmi)
     .loadCommands("/src/commands")
 ```
 
-## loadEvents Paramater
+## load Events Paramater
 ``loadEvents()`` - it is the function that loads all event files in a directory
 
 - loadEvents() will default to the root of the directory, so where your license or gitignore is.
