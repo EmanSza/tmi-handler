@@ -7,8 +7,6 @@ module.exports =  class TwitchWrapper{
         // Constructor Options
         this.tmi = tmi;
         this.options = options;
-        this.commandPath = options.commandPath || '/commands';
-        this.eventPath = options.eventPath || '/events';
         this.debug = options.debug || false;
         this.contentCreator = options.contentCreator || false;
         this.reconnect = options.reconnect || false;
@@ -30,8 +28,6 @@ module.exports =  class TwitchWrapper{
             'subscription', 'timeout', 'unhost', 'unmod', 'VIPs', 'whisper',
         ]
         this.cLog = new log({ botName: this.username });
-        this.loadCommands(this.commandPath, this.cLog);
-        this.loadEvents(this.eventPath, this.cLog);
         // If options are not defined throw errors`
         if(!this.tmi) throw new Error('TwitchWrapper requires tmi.js');
         if (!this.options.channels) {
@@ -71,16 +67,14 @@ module.exports =  class TwitchWrapper{
             if (this.selfDetection && self) return;
             this.message( { client, channel, userstate, message, self } );
         });
-        // For each event go through the eventTypes array and run the event function
         this.events.forEach(event => {
             client.on(event.name, (...args) => {
                 event.execute(...args);
             });
         });
-        // End of Constructor
     }
 
-    loadCommands (commandPath, log,) {
+    loadCommands (commandPath) {
         let i = 0;
         // Create a for loop that counts the amount of files in the directory
         let files = fs.readdirSync(path.resolve(process.cwd() + commandPath), { withFileTypes: true });
@@ -95,7 +89,7 @@ module.exports =  class TwitchWrapper{
                 // Add up i to the amount of files from the scoped i variable
                 i++
                 // Log the Command being pushed into the array
-                log.loaded("Command",command.name);
+                this.cLog.loaded("Command",command.name);
             } 
         }
         // Find all the sub directories
@@ -117,9 +111,10 @@ module.exports =  class TwitchWrapper{
             }
         }
 
-        log.totalLoaded("Commands", i);
+        this.cLog.totalLoaded("Commands", i);
+        return this;
     }
-    loadEvents(eventPath, log) {
+    loadEvents (eventPath) {
         // Events Will be handled by name of the file, so if you have a file called test.js, it will be called test
         let i = 0;
         let files = fs.readdirSync(path.resolve(process.cwd() + eventPath), { withFileTypes: true });
@@ -136,18 +131,19 @@ module.exports =  class TwitchWrapper{
                 // If the file name is in the eventTypes array, run the event
                 if (this.eventTypes.includes(eventObj.name)) {
                     this.events.push(eventObj);
-                    log.loaded("Event",eventObj.name);
+                    this.cLog.loaded("Event",eventObj.name);
                 } else {
-                    log.error("Event", "Does Not Match a Event Type ",eventObj.name);
+                    this.cLog.error("Event", "Does Not Match a Event Type ",eventObj.name);
                     i--;
                 }
             }
         }
-        log.totalLoaded("Events", i);
+        this.cLog.totalLoaded("Events", i);
+        return this;
     }
 
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
-    message(channel, userstate, message, self, client ) {
+    message( { channel, userstate, message, self, client } ) {
         // If the 1st character of the message is a the prefix, run the command
         if(message[0] === this.prefix) {
         // Substring the message to remove the prefix

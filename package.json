@@ -1,7 +1,7 @@
 {
   "name": "tmi-handler",
-  "version": "1.1.1",
-  "description": "",
+  "version": "1.2.0",
+  "description": "A Handler for Twitch.tv's TMI.JS library,  this module is a wrapper for the TMI.JS library, and provides a simple interface for interacting with Twitch.tv's chat. This module is designed to be used with the tmi.js library, and is not intended to be used on its own. This module is licensed under the MIT license. See the LICENSE file for more information.",
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,12 +12,11 @@
     "tmi",
     "chat",
     "twitch-chat",
-    "twitch-chat-module",
-    "twitch-chat-module-js",
-    "twitch-moderation"
+    "tmi-handler",
+    "tmi-js"
   ],
   "author": "EmanSza",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/EmanSza/tmi-handler.git"

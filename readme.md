@@ -30,18 +30,20 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
             password: 'test',
             debug: true,
             // For Pathing we require your base directory
-            commandPath: '/src/commands',
-            eventPath:   '/src/events',
             // If you are a content creator and dont want senseitive information showing in the console turn this to true
             contentCreator: false,
 
             reconnect: true   
 })
+    // Now we Run the functions to load commands and events
+    .loadCommands("/src/commands")
+    .loadEvents("/src/events)
 ```
 
 # Documentation
 ## Table of Contents  
-[General Documention](#class-constructor-options)  
+[General Documention](#class-constructor-options)   
+[Commands and Events](#commands_and_events)  
 [Command Paramaters](#command-paramaters)   
 [Events](#events)   
 [Event Paramaters](#event-paramaters)
@@ -53,8 +55,6 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 | ------------- | ------------- | ------------- | ------------- |
 |     tmi       |   tmi Package |  Paramater    |     true     |
 |   Channels    |   Array       |  Object       |     false Default to []          |
-|  commandPath  |   String      |  Object       |     false  Defaults to /commands |
-|   eventPath   |   String      |  Object       |     false Defaults to /events    |
 |    username   |   String      |  Object       |     true     |
 |   password    |   String      |  Object       |     true     |
 |     prefix    |   String      |  Object       |     false Defaults to !          |
@@ -62,6 +62,12 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 | contentCreator|   Boolean     |  Object       |     false Defaults to false      |
 |   reconnect   |   Boolean     |  Object       |     false Defaults to false      |
 | selfDetection |   Boolean     |  Object       |     false Defaults to true       |
+
+##### Class Constructor Functions
+|    Name       |      Return      |     description    | 
+| ------------- | ------------- | ------------- |
+|  loadCommands |      this     |  Loads Commands (Path starts in node directory)    |
+|  loadEvents   |      this     |  Loads Events (Path starts in node directory)      |
 
 ## tmi Package
 `` tmi `` - It is the 1st Paramater the constructor takes when initlaizing. the value is taken from the tmi.js Package
@@ -82,37 +88,6 @@ const tmiHandler = require('tmi-handler');
 
 const tmiHandlerHandler = new tmiHandler (tmi, {
     channels : ["Array", "Of", "Channel", "Names"]
-})
-```
-## Command Path Paramater
-``commandPath`` - It is the paramater that leeds to your commands folder
-
-- commandPath will default to the root of ur folder, so if your index file is in 
-
- folderName/src/index.js | commandPath will default to /folderName/commands/
-
-```js
-const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
-
-const tmiHandlerHandler = new tmiHandler (tmi, {
-    commandPath: '/src/commands/'
-})
-```
-
-## Event Path Paramater
-``eventPath`` - It is the paramater that leeds to your events folder
-
-- eventPath will default to the root of ur folder, so if your index file is in 
-
- folderName/src/index.js | eventPath will default to /folderName/events/
-
-```js
-const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
-
-const tmiHandlerHandler = new tmiHandler (tmi, {
-    commandPath: '/src/events/'
 })
 ```
 ## Debug Paramater
@@ -203,6 +178,39 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
     selfDetection: true
 })
 ```
+# Command and Events
+Loading Commands and Events
+
+## load Commands Function
+``loadCommands()`` - function to load the command folder
+
+- loadCommands() will default to the root of the directory, so where your license or gitignore is.
+
+  /src/index.js | INFO | loadCommands() will default to /folderName/commands/
+
+```js
+const tmi = require('tmi.js')
+const tmiHandler = require('tmi-handler');
+
+const tmiHandlerHandler = new tmiHandler (tmi)
+    .loadCommands("/src/commands")
+```
+
+## loadEvents Paramater
+``loadEvents()`` - it is the function that loads all event files in a directory
+
+- loadEvents() will default to the root of the directory, so where your license or gitignore is.
+
+ /src/index.js | INFO | eventPath will default to /folderName/events/
+
+```js
+const tmi = require('tmi.js')
+const tmiHandler = require('tmi-handler');
+
+const tmiHandlerHandler = new tmiHandler (tmi)
+    .loadEvents("/src/events")
+```
+
 # Command Files
 Command Files are designed to be flexible on your side
 ```js
