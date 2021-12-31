@@ -13,6 +13,8 @@ module.exports =  class TwitchWrapper{
         this.channels = options.channels || [];
         this.username = options.username;
         this.password = options.password;
+        this.commandPath = options.commandPath || undefined;
+        this.eventPath = options.eventPath || undefined;
         this.selfDetection = options.selfDetection || true;
         this.prefix = options.prefix || '!';
         // The commands array will hold all the commands that are loaded
@@ -29,6 +31,13 @@ module.exports =  class TwitchWrapper{
         ]
         this.cLog = new log({ botName: this.username });
         // If options are not defined throw errors`
+        if(this.commandPath != undefined) {
+             throw new Error("commadPath is deprecated from the options object please use loadCommands");
+        }
+        // if the user is using eventPath, throw an error 
+        if(this.eventPath != undefined) {
+            throw new Error("eventPath is deprecated from the options object please use loadEvents");
+        }
         if(!this.tmi) throw new Error('TwitchWrapper requires tmi.js');
         if (!this.options.channels) {
             throw new Error('Channels are not defined');
