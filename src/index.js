@@ -78,8 +78,6 @@ module.exports =  class TwitchWrapper{
             if (this.selfDetection && self) return;
             this.message( { client, channel, userstate, message, self } );
         });
-      // Call eventReturn to load the events
-      const eventCaller = new eventReturn(this.tmi, this.client, events, this.selfDetection, this.cLog);
 
     }
 
@@ -147,6 +145,7 @@ module.exports =  class TwitchWrapper{
                 }
             }
         }
+        new eventReturn(this.tmi, this.client, this.events, this.selfDetection, this.cLog);
         this.cLog.totalLoaded("Events", i);
         return this;
     }
