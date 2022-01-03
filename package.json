@@ -1,6 +1,6 @@
 {
   "name": "tmi-handler",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "A Handler for Twitch.tv's TMI.JS library,  this module is a wrapper for the TMI.JS library, and provides a simple interface for interacting with Twitch.tv's chat. This module is designed to be used with the tmi.js library, and is not intended to be used on its own. This module is licensed under the MIT license. See the LICENSE file for more information.",
   "main": "./src/index.js",
   "scripts": {

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const log = require('./log');
+const eventReturn = require('./events');
 //Call super 
 module.exports =  class TwitchWrapper{
     constructor(tmi, options) {
@@ -67,11 +68,9 @@ module.exports =  class TwitchWrapper{
             if (this.selfDetection && self) return;
             this.message( { client, channel, userstate, message, self } );
         });
-        this.events.forEach(event => {
-            client.on(event.name, (...args) => {
-                event.execute(...args);
-            });
-        });
+      // Call eventReturn to load the events
+      const eventCaller = new eventReturn(this.tmi, this.client, events, this.selfDetection, this.cLog);
+
     }
 
     loadCommands (commandPath) {
