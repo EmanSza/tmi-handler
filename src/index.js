@@ -68,6 +68,7 @@ module.exports =  class TwitchWrapper{
             // Connect to the channels
             channels: this.channels
         });
+        this.client = client;
         // Connect to Twitch IRC Server and log the connection
         client.connect().then(() => { this.cLog.login(this.username) });
 
