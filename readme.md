@@ -227,7 +227,8 @@ Events are ran by file name. this is in order to prevent mutiple files with the 
 ```js
 module.exports = {
     // As the paramaters we support all the params in our Event Paramaters Section
-    execute(channel, username, userstate) {
+    // PARAMATERS ARE INSIDE A OBJECT ||  So if you dont use a certain paramater you can clean up uour code :)
+    execute( { channel, username, userstate } ) {
         // Now we will write a simple message out saying who was banned!
         client.say(channel, `${username} Was Banned!`)
     }
