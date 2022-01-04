@@ -20,6 +20,7 @@ module.exports =  class TwitchWrapper{
         this.prefix = options.prefix || '!';
         // The commands array will hold all the commands that are loaded
         this.commands = [];
+        this.cooldown = [];
         // The events array will hold all the events that are loaded
         this.events = [];
         // a array of event types that will be loaded
@@ -152,6 +153,14 @@ module.exports =  class TwitchWrapper{
 
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
     message( { channel, userstate, message, self, client } ) {
+        // Add the user to the cooldowns array with a value of 0 if the user is not in the array with a object
+        if (!this.cooldowns[userstate['user-id']]) {
+            this.cooldowns[userstate['user-id']] = {
+                username: userstate['display-name'],
+                cooldown: 0,
+                Date: new Date()
+            };
+        }
         // If the 1st character of the message is a the prefix, run the command
         if(message[0] === this.prefix) {
         // Substring the message to remove the prefix
@@ -171,8 +180,25 @@ module.exports =  class TwitchWrapper{
                         client.say(channel, 'You do not have permission to use this command');
                         return;
                     }
+                    // Check if the command has a cooldown
+                    if(command.cooldown) {
+                        // Check if the user is on cooldown
+                        if(this.cooldowns[userstate['user-id']].cooldown > 0) {
+                            // If the cooldown is greater than 0, return the message
+                            client.say(channel, 'You are on cooldown for ' + this.cooldowns[userstate['user-id']].cooldown + ' seconds');
+                            return;
+                        }
+                        // If the cooldown is 0, set the cooldown to the command cooldown
+                        this.cooldowns[userstate['user-id']].cooldown = command.cooldown;
+                        // Set the cooldown date to the current date
+                        this.cooldowns[userstate['user-id']].Date = new Date();
+                        // Run the command
+                        command.execute( { channel, userstate, message, self, commandArgs, client });
+                    } else {
+                        // If the command does not have a cooldown, run the command
+                        command.execute( { channel, userstate, message, self, commandArgs, client });
+                    }
                     // Run the command with the arguments
-                command.execute( { channel, userstate, message, self, commandArgs, client });
                 }
             });
         }
