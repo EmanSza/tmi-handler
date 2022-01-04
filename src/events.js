@@ -7,7 +7,7 @@ module.exports = class eventReturner {
         this.cLog = cLog;
         this.eventName = undefined;
         this.paramaters = undefined;
-
+ (async () => {
         this.client.on('action', (channel, userstate, nessage, self) => {
             // Call event function and pass in the event name and paramaters
             this.eventName = 'action';
@@ -302,7 +302,7 @@ module.exports = class eventReturner {
             this.paramaters = {from, userstate, messafe, self};
             this.event();
         });
-        
+    })();
     }
     event() {
         let data = {

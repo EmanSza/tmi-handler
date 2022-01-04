@@ -113,7 +113,7 @@ module.exports =  class TwitchWrapper{
                     // Add up i to the amount of files from the scoped i variable
                     i++
                     // Log the Command being pushed into the array
-                    log.loaded("Command",command.name);
+                    this.cLog.loaded("Command",command.name);
                 }
             }
         }
