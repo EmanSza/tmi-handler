@@ -17,11 +17,11 @@ Stuff the handler Handles
 This handler is all built into a class, so we need to initialise it!
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
 // Now Let us input the options into the class
 // Please note that tmi is required
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     // All Options besides tmiHandler are inputed within a object
             // Most options are the options that tmi Asks for, options like commandPath, and eventPath are all custon options,
             // More information will be within the documentation below
@@ -68,8 +68,8 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ```js
 
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
-const tmiHandlerHandler = new tmiHandler (tmi)
+const { client } = require('tmi-handler');
+const tmiHandler = new client (tmi)
 ```
 
 ## Channels Paramater
@@ -77,9 +77,9 @@ const tmiHandlerHandler = new tmiHandler (tmi)
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     channels : ["Array", "Of", "Channel", "Names"]
 })
 ```
@@ -88,9 +88,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     debug: true
 })
 ```
@@ -99,9 +99,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     prefix: "?"
 })
 ```
@@ -110,9 +110,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     contentCreator: true
 })
 ```
@@ -121,9 +121,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     reconnect: true
 })
 ```
@@ -132,9 +132,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     channels: ["twitch"]
 })
 ```
@@ -143,9 +143,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     username: 'twitch'
 })
 ```
@@ -154,9 +154,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     password: 'oauth:398b49348fdsk423'
 })
 ```
@@ -165,9 +165,9 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandler = new client (tmi, {
     selfDetection: true
 })
 ```
@@ -183,9 +183,9 @@ Loading Commands and Events
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi)
+const tmiHandler = new client (tmi)
     .loadCommands("/src/commands")
 ```
 
@@ -198,9 +198,9 @@ const tmiHandlerHandler = new tmiHandler (tmi)
 
 ```js
 const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
+const { client } = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi)
+const tmiHandler = new client(tmi)
     .loadEvents("/src/events")
 ```
 
