@@ -21,7 +21,13 @@
     "type": "git",
     "url": "https://github.com/EmanSza/tmi-handler.git"
   },
+  "types": "types/index.d.ts",
   "bugs": {
     "url": "https://github.com/EmanSza/tmi-handler/issues"
+  },
+  "dependencies": {
+    "@types/tmi.js": "^1.8.1",
+    "tmi.js": "^1.8.5",
+    "typescript": "^4.5.4"
   }
 }

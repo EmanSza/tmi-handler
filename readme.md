@@ -1,7 +1,5 @@
 This is a Light Weight Handler for TMI.js, This handler Offers the following
 
-(Its so lightweight it doesnt have any dependencys)
-
 - Command Handling
 - Event Handling
 - Color Logging
@@ -11,21 +9,22 @@ Everything is custom built in this package
 Stuff the handler Handles
 
 - Login/Connection
+- And your commands, of course
 
 ## Getting Started
 
 This handler is all built into a class, so we need to initialise it!
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
+const path = require('path');
 
 // Now Let us input the options into the class
-// Please note that tmi is required
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const handler = new tmiHandler ({
     // All Options besides tmiHandler are inputed within a object
             // Most options are the options that tmi Asks for, options like commandPath, and eventPath are all custon options,
             // More information will be within the documentation below
-            channels: ['#test'],
+            channels: ['test'],
             username: 'test',
             password: 'test',
             debug: true,
@@ -34,10 +33,11 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
             contentCreator: false,
 
             reconnect: true   
-})
+});
     // Now we Run the functions to load commands and events
-    .loadCommands("/src/commands")
-    .loadEvents("/src/events")
+    // You can await these if you want
+    handler.loadCommands(path.join(__dirname, 'src/commands'));
+    handler.loadEvents(path.join(__dirname, 'src/events'));
 ```
 
 # Documentation
@@ -46,11 +46,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 
 |    Options    |      Value    |     Within    |   Required    |
 | ------------- | ------------- | ------------- | ------------- |
-|     tmi       |   tmi Package |  Paramater    |     true     |
 |    username   |   String      |  Object       |     true     |
 |   password    |   String      |  Object       |     true     |
+|  channels     | Array of Strings | Object     |  true
 |     prefix    |   String      |  Object       |     false Defaults to !          |
-|   Channels    |   Array       |  Object       |     false Default to []          |
 |     debug     |   Boolean     |  Object       |     false Defaults to false      |
 | contentCreator|   Boolean     |  Object       |     false Defaults to false      |
 |   reconnect   |   Boolean     |  Object       |     false Defaults to false      |
@@ -59,27 +58,19 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ##### Class Constructor Functions
 |    Name       |      Return      |     description    | 
 | ------------- | ------------- | ------------- |
-|  loadCommands |      this     |  Loads Commands (Path starts in node directory)    |
-|  loadEvents   |      this     |  Loads Events (Path starts in node directory)      |
+|  loadCommands |      Promise<TmiCommand[]>     |  Loads Commands (Path starts in node directory)    |
+|  loadEvents   |      Promise<TmiEvent[]>     |  Loads Events (Path starts in node directory)      |
 
-## tmi Package
-`` tmi `` - It is the 1st Paramater the constructor takes when initlaizing. the value is taken from the tmi.js Package
 
-```js
-
-const tmi = require('tmi.js')
-const tmiHandler = require('tmi-handler');
-const tmiHandlerHandler = new tmiHandler (tmi)
-```
 
 ## Channels Paramater
 ``channels`` - It is one of the params taken from the object in the initliser. Its value is an Array
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     channels : ["Array", "Of", "Channel", "Names"]
 })
 ```
@@ -87,21 +78,21 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``debug`` -  Enables or disables tmi.js debugging
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     debug: true
 })
 ```
 ## Prefix Paramater
-``prefix`` -  Enables or disables tmi.js debugging
+``prefix`` -  Prefix for your bot commands
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     prefix: "?"
 })
 ```
@@ -109,10 +100,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``contentCreator`` -  Enables or disables sensitive information (Username and Password) in debugging
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     contentCreator: true
 })
 ```
@@ -120,10 +111,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``reconnect`` -  Enables or disables tmi.js reconnect
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     reconnect: true
 })
 ```
@@ -131,10 +122,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``channels`` -  Channels the bot will join upon connection
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     channels: ["twitch"]
 })
 ```
@@ -142,10 +133,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``username`` -  the name of the bot that you will use to connect to twitch
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     username: 'twitch'
 })
 ```
@@ -153,10 +144,10 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``password`` -  the password used to connect to twitch via the bot
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     password: 'oauth:398b49348fdsk423'
 })
 ```
@@ -164,17 +155,28 @@ const tmiHandlerHandler = new tmiHandler (tmi, {
 ``selfDetection`` -  if you dont want the bot to respond to itself in any way
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi, {
+const tmiHandlerHandler = new tmiHandler ({
     selfDetection: true
 })
 ```
-# Loading Command and Events
-Loading Commands and Events
+## TypeScript Parameter
+``typeScript`` - wheter your code is written in TypeScript instead of JavaScript
 
-## load Commands Function
+```js
+
+const tmiHandler = require('tmi-handler');
+
+const tmiHandlerHandler = new tmiHandler ({
+    typeScript: true
+})
+```
+
+# Loading Command and Events
+
+## loadCommands() method
 ``loadCommands()`` - function to load the command folder
 
 - loadCommands() will default to the root of the directory, so where your license or gitignore is.
@@ -182,11 +184,11 @@ Loading Commands and Events
   /src/index.js | INFO | loadCommands() will default to /folderName/commands/
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi)
-    .loadCommands("/src/commands")
+const handler = new tmiHandler ();
+    handler.loadCommands("/src/commands");
 ```
 
 ## load Events Paramater
@@ -197,11 +199,11 @@ const tmiHandlerHandler = new tmiHandler (tmi)
  /src/index.js | INFO | eventPath will default to /folderName/events/
 
 ```js
-const tmi = require('tmi.js')
+
 const tmiHandler = require('tmi-handler');
 
-const tmiHandlerHandler = new tmiHandler (tmi)
-    .loadEvents("/src/events")
+const handler = new tmiHandler ()
+    handler.loadEvents("/src/events")
 ```
 
 # Command Files
@@ -222,20 +224,117 @@ module.exports = {
     // Congrats you just made a command!
 }
 ```
+
+# Multiple commands per file
+You can also make more than one command per command file by exporting an array of commands!
+
+```js
+module.exports = [
+    {
+        name: "ping",
+
+        modOnly: false,
+
+        execute(client, channel, userstate, message, self, commandArgs){
+            client.say("Pong!");
+        }
+    },
+    {
+        name: "token"
+
+        modOnly: true,
+
+        execute(client, channel, userstate, message, self, commandArgs){
+            client.say("this is your token: :token_emoji:");
+        }
+    }
+]
+
+```
+
 # Event Files
-Events are ran by file name. this is in order to prevent mutiple files with the same events.
+Events are ran by the name you pass into the file, but you cannot have duplicated events (that will throw an error).
+Also, subdirectories aren't supported in events.
+
+Client is always the first parameter in events.
 ```js
 module.exports = {
     // As the paramaters we support all the params in our Event Paramaters Section
-    // PARAMATERS ARE INSIDE A OBJECT ||  So if you dont use a certain paramater you can clean up uour code :)
-    execute( { channel, username, userstate } ) {
+    event: "ban",
+
+    execute(client, channel, username, userstate) {
         // Now we will write a simple message out saying who was banned!
         client.say(channel, `${username} Was Banned!`)
     }
     // Congrats you just made a event
 }
 ```
+# TypeScript support
+Type definitions and major TypeScript support was added in 2.0!
+
+To run your `.ts` command files, pass the `typeScript` option as true
+```js
+import tmiHandler from "tmi-handler";
+
+const handler = new tmiHandler({
+    typeScript: true,
+
+    // other options
+})
+
+// You can await these in case you need
+
+handler.loadCommands("src/commands");
+handler.loadEvents("src/events"); // these two will look for .ts files
+```
+
+## Command files in TypeScript
+```js
+import { TmiCommand } from "tmi-handler";
+
+// export = is also supported
+
+export default {
+    name: "ping",
+
+    modOnly: false,
+
+    execute(client, channel, userstate, message, self, args){
+        client.say(channel, "Pong!")
+    }
+} as TmiCommand
+```
+
+## Multiple commands per file in TypeScript
+```js
+import { TmiCommand } from "tmi-handler";
+
+// export = is also supported
+
+export default [
+    {
+        name: "ping",
+
+        modOnly: false,
+
+        execute(client, channel, userstate, message, self, args){
+            client.say(channel, "Pong!")
+    },
+    {
+        name: "token",
+
+        modOnly: true,
+
+    execute(client, channel, userstate, message, self, args){
+        client.say(channel, "Pong!")
+    }
+] as TmiCommand[]
+```
+
+
+
 # Command Paramaters
+- client
 - channel
 - userstate
  - message
@@ -250,7 +349,7 @@ For all the events vist the tmi.js documention [here](https://github.com/tmijs/d
     - self
     - username
     - reason
-    - messag,
+    - message
     - deletedMessage
     - msgid
     - messageCloned
