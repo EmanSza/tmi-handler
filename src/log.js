@@ -17,6 +17,8 @@ module.exports = class log {
       blue: '\x1b[34m',
       black: '\x1b[30m',
     };
+    this.total = null;
+    this.fileName = null;
   }
   // Functions to log in the console.
   login(message) {

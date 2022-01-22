@@ -2,9 +2,12 @@
   "name": "tmi-handler",
   "version": "1.2.5",
   "description": "A Handler for Twitch.tv's TMI.JS library,  this module is a wrapper for the TMI.JS library, and provides a simple interface for interacting with Twitch.tv's chat. This module is designed to be used with the tmi.js library, and is not intended to be used on its own. This module is licensed under the MIT license. See the LICENSE file for more information.",
-  "main": "./src/index.js",
+  "main": "./build/index.js",
   "scripts": {
     "format": "prettier --write .",
+    "build": "swc src -d build",
+    "lint": "eslint src --max-warnings=0",
+    "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -29,9 +32,13 @@
   "peerDependencies": {
     "tmi.js": "1.x"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@swc/cli": "^0.1.55",
+    "@swc/core": "^1.2.133",
+    "@swc/jest": "^0.2.17",
     "@types/tmi.js": "1.x",
+    "eslint": "^8.7.0",
+    "jest": "^27.4.7",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4"
   },
