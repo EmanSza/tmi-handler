@@ -85,6 +85,6 @@ export type TmiCommand = {
     ): void;
 };
 
-// HUGE thanks to iPhoneXVII#9257 for helping me getting this to work
+// HUGE thanks to iPhoneXVII#92 57 for helping me getting this to work
 
 export type TmiEvent = TmiClientEvent;
