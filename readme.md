@@ -17,7 +17,6 @@ This handler is all built into a class, so we need to initialise it!
 ```js
 
 const tmiHandler = require('tmi-handler');
-const path = require('path');
 
 // Now Let us input the options into the class
 const handler = new tmiHandler ({
@@ -36,8 +35,8 @@ const handler = new tmiHandler ({
 });
     // Now we Run the functions to load commands and events
     // You can await these if you want
-    handler.loadCommands(path.join(__dirname, 'src/commands'));
-    handler.loadEvents(path.join(__dirname, 'src/events'));
+    handler.loadCommands("/commands");
+    handler.loadEvents("/commands");
 ```
 
 # Documentation
@@ -191,7 +190,7 @@ const handler = new tmiHandler ();
     handler.loadCommands("/src/commands");
 ```
 
-## load Events Paramater
+## load Events method
 ``loadEvents()`` - it is the function that loads all event files in a directory
 
 - loadEvents() will default to the root of the directory, so where your license or gitignore is.

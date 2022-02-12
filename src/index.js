@@ -1,9 +1,9 @@
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
 const log = require("./log");
 const eventReturn = require("./events");
 const tmi = require("tmi.js");
-//Call super
+
 module.exports = class TwitchWrapper {
     constructor(options) {
         // Constructor Options
@@ -11,7 +11,7 @@ module.exports = class TwitchWrapper {
         this.debug = options.debug || false;
         this.contentCreator = options.contentCreator || false;
         this.reconnect = options.reconnect || false;
-        this.channels = options.channels || [];
+        this.channels = options.channels;
         this.username = options.username;
         this.password = options.password;
         this.commandPath = options.commandPath || undefined;
@@ -65,16 +65,16 @@ module.exports = class TwitchWrapper {
             "timeout",
             "unhost",
             "unmod",
-            "VIPs",
+            "vips",
             "whisper",
         ];
         this.cLog = new log({ botName: this.username });
         // If options are not defined throw errors`
-        if (this.commandPath != undefined) {
+        if (this.commandPath) {
             throw new Error("commadPath is deprecated from the options object please use loadCommands");
         }
         // if the user is using eventPath, throw an error
-        if (this.eventPath != undefined) {
+        if (this.eventPath) {
             throw new Error("eventPath is deprecated from the options object please use loadEvents");
         }
         if (!this.options.channels) {
@@ -125,41 +125,49 @@ module.exports = class TwitchWrapper {
     loadCommands(commandPath = "/commands") {
         return new Promise((resolve, reject) => {
             // Create a for loop that counts the amount of files in the directory
-            let files = fs.readdirSync(path.resolve(process.cwd() + commandPath), {
-                withFileTypes: true,
-            });
-            // Loops through the files
-            for (const file of files) {
-                if (file.isDirectory()) {
-                    // Read the files in the directory
-                    this.loadCommandsNoCLog(`${commandPath}/${file.name}`);
-                }
-                // If the File is a file, run the command
-                else if (file.name.endsWith(this.typeScript ? ".ts" : ".js")) {
-                    // require the file so we can get the command object
-                    let command = require(path.resolve(process.cwd() + commandPath + "/" + file.name));
-                    // Push the command into the commands array
-                    if (command.default) command = command.default;
-                    command.length
-                        ? command.forEach(cmd => {
-                              this.commands.push(cmd);
-                              this.cLog.loaded("Command", cmd.name);
-                          })
-                        : (() => {
-                              this.commands.push(command);
-                              this.cLog.loaded("Command", command.name);
-                          })();
-                    // Add up i to the amount of files from the scoped i variable
-                    // Log the Command being pushed into the array
-                }
+            try {
+                fs.readdir(path.resolve(process.cwd() + commandPath), {
+                    withFileTypes: true,
+                })
+                    .then(files => {
+                        // Loops through the files
+                        for (const file of files) {
+                            if (file.isDirectory()) {
+                                // Read the files in the directory
+                                this.#loadCommandsNoCLog(`${commandPath}/${file.name}`);
+                            }
+                            // If the File is a file, run the command
+                            else if (file.name.endsWith(this.typeScript ? ".ts" : ".js")) {
+                                // require the file so we can get the command object
+                                let command = require(path.resolve(process.cwd() + commandPath + "/" + file.name));
+                                // Push the command into the commands array
+                                if (command.default) command = command.default;
+                                command.length
+                                    ? command.forEach(cmd => {
+                                          this.commands.push(cmd);
+                                          this.cLog.loaded("Command", cmd.name);
+                                      })
+                                    : (() => {
+                                          this.commands.push(command);
+                                          this.cLog.loaded("Command", command.name);
+                                      })();
+                                // Add up i to the amount of files from the scoped i variable
+                                // Log the Command being pushed into the array
+                            }
+                        }
+                    })
+                    .then(() => {
+                        this.cLog.totalLoaded("Commands", this.commands.length);
+                        resolve(this);
+                    });
+            } catch (err) {
+                reject("An error occurred while loading commands:", err);
             }
-            this.cLog.totalLoaded("Commands", this.commands.length);
-            resolve(this.commands);
         });
     }
-    loadCommandsNoCLog(commandPath) {
+    async #loadCommandsNoCLog(commandPath) {
         // Create a for loop that counts the amount of files in the directory
-        let files = fs.readdirSync(path.resolve(process.cwd() + commandPath), {
+        let files = await fs.readdir(path.resolve(process.cwd() + commandPath), {
             withFileTypes: true,
         });
         // Loops through the files
@@ -188,54 +196,54 @@ module.exports = class TwitchWrapper {
         }
         return;
     }
-    loadEvents(eventPath = "/commands") {
+    loadEvents(eventPath = "/events") {
         // Events Will be handled by name of the file, so if you have a file called test.js, it will be called test
         return new Promise((resolve, reject) => {
             console.log("\x1b[33mPlease keep in mind that \x1b[7msubdirectories\x1b[0m", "\x1b[33mwon't work while loading events.");
             let files = fs
-                .readdirSync(path.resolve(process.cwd() + eventPath), {
+                .readdir(path.resolve(process.cwd() + eventPath), {
                     withFileTypes: true,
                 })
-                .filter(file => file.name.endsWith(this.typeScript ? ".ts" : ".js"));
-            // Create a for loop that counts the amount of files in the directory
-
-            for (const file of files) {
-                if (file.isFile()) {
-                    let eventFile = require(path.resolve(process.cwd() + eventPath + "/" + file.name));
-                    const eventObj = {
-                        eventName: eventFile.default.event.toLowerCase() || eventFile.event.toLowerCase(),
-                        execute: eventFile.default.execute || eventFile.execute,
-                    };
-                    if (this.events.some(e => e.eventName == eventObj.eventName)) {
-                        reject(`Event ${eventObj.eventName} already exists`);
-                        break;
+                .then(files => files.filter(file => file.name.endsWith(this.typeScript ? ".ts" : ".js")))
+                .then(files => {
+                    for (const file of files) {
+                        if (file.isFile()) {
+                            let eventFile = require(path.resolve(process.cwd() + eventPath + "/" + file.name));
+                            const eventObj = {
+                                eventName: eventFile.default.event.toLowerCase() || eventFile.event.toLowerCase(),
+                                execute: eventFile.default.execute || eventFile.execute,
+                            };
+                            if (this.events.some(e => e.eventName == eventObj.eventName)) {
+                                reject(`Event ${eventObj.eventName} already exists`);
+                                break;
+                            }
+                            // If the file name is in the eventTypes array, run the event
+                            if (this.eventTypes.includes(eventObj.eventName)) {
+                                this.events.push(eventObj);
+                                this.cLog.loaded("Event", eventObj.eventName);
+                            } else {
+                                this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
+                            }
+                        }
                     }
-                    // If the file name is in the eventTypes array, run the event
-                    if (this.eventTypes.includes(eventObj.eventName)) {
-                        this.events.push(eventObj);
-                        this.cLog.loaded("Event", eventObj.eventName);
-                    } else {
-                        this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
-                    }
-                }
-            }
-            new eventReturn(this.client, this.events, this.selfDetection, this.cLog);
-            this.cLog.totalLoaded("Events", this.events.length);
-            resolve(this.events);
+                })
+                .then(() => {
+                    new eventReturn(this.client, this.events, this.selfDetection, this.cLog);
+                    this.cLog.totalLoaded("Events", this.events.length);
+                    resolve(this);
+                });
         });
     }
+
     // Create a Message Function that when a message is recieved, it will check if the message is a command and if it is, it will run the command
     message({ channel, userstate, message, self, client }) {
         // If the 1st character of the message is a the prefix, run the command
-        if (message[0] === this.prefix) {
+        if (message.startsWith(this.prefix)) {
             // Substring the message to remove the prefix
-            let command = message.substring(1).toLowerCase();
-            // Split the message into an array
-            let commandSplit = command.split(" ");
+            let args = message.toLowerCase().slice(this.prefix.length).split(" ");
             // Get the command name
-            let commandName = commandSplit[0];
-            // Get the command arguments
-            let commandArgs = commandSplit.slice(1);
+            let commandName = args.shift();
+
             // get each command in the commands array
             this.commands.forEach(command => {
                 // If the called command name is the same as the command name in the command object, run the command
@@ -246,7 +254,7 @@ module.exports = class TwitchWrapper {
                         return;
                     }
                     // Run the command with the arguments
-                    command.execute(client, channel, userstate, message, self, commandArgs);
+                    command.execute({ client, channel, userstate, message, self, args });
                 }
             });
         }

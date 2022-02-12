@@ -64,6 +64,15 @@ export default class TwitchWrapper {
     private message({ channel, userstate, message, self, client }): void;
 }
 
+type TmiCommandParameters = {
+    client: tmi.Client,
+    channel: string,
+    userstate: tmi.Userstate,
+    message: string,
+    self: boolean,
+    args: string[] | undefined
+};
+
 export type TmiCommand = {
     /** Name of the command
      * ```js
@@ -73,16 +82,11 @@ export type TmiCommand = {
     name: string;
 
     /** Whether the command is moderator only */
-    modOnly: boolean;
+    modOnly?: boolean;
 
-    execute(
-        client: tmi.Client,
-        channel: string,
-        userstate: tmi.Userstate,
-        message: string,
-        self: boolean,
-        commandArgs: string[]
-    ): void;
+    /** insert description here */
+    execute(args: TmiCommandParameters): void | Promise<void>
+
 };
 
 // HUGE thanks to iPhoneXVII#92 57 for helping me getting this to work
