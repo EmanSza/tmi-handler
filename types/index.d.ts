@@ -70,7 +70,7 @@ type TmiCommandParameters = {
     userstate: tmi.Userstate,
     message: string,
     self: boolean,
-    args: string[] | undefined
+    args: string[]
 };
 
 export type TmiCommand = {
