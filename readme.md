@@ -57,8 +57,8 @@ const handler = new tmiHandler ({
 ##### Class Constructor Functions
 |    Name       |      Return      |     description    | 
 | ------------- | ------------- | ------------- |
-|  loadCommands |      Promise<TmiCommand[]>     |  Loads Commands (Path starts in node directory)    |
-|  loadEvents   |      Promise<TmiEvent[]>     |  Loads Events (Path starts in node directory)      |
+|  loadCommands |      Promise<this]>     |  Loads Commands (Path starts in node directory)    |
+|  loadEvents   |      Promise<this>     |  Loads Events (Path starts in node directory)      |
 
 
 
@@ -207,6 +207,8 @@ const handler = new tmiHandler ()
 
 # Command Files
 Command Files are designed to be flexible on your side
+
+All parameters as inside objects, so you can remove/add them as you need
 ```js
 // Inside your command folder create a command file called whatever
 module.exports = {
@@ -216,7 +218,7 @@ module.exports = {
     modOnly : false;
 
     // Now we will write the bit that will actually execute the code
-    execute(client, channel, userstate, message, self, commandArgs) {
+    execute({client, channel, userstate, message, self, args}) {
         // Now we will simply tell the bot to send a message
         client.say(channel, "Pong!");
     }
@@ -234,7 +236,7 @@ module.exports = [
 
         modOnly: false,
 
-        execute(client, channel, userstate, message, self, commandArgs){
+        execute(client, channel, userstate, message, self, args){
             client.say("Pong!");
         }
     },
@@ -243,7 +245,7 @@ module.exports = [
 
         modOnly: true,
 
-        execute(client, channel, userstate, message, self, commandArgs){
+        execute(client, channel, userstate, message, self, args){
             client.say("this is your token: :token_emoji:");
         }
     }
@@ -255,13 +257,13 @@ module.exports = [
 Events are ran by the name you pass into the file, but you cannot have duplicated events (that will throw an error).
 Also, subdirectories aren't supported in events.
 
-Client is always the first parameter in events.
+Parameters are also inside an object
 ```js
 module.exports = {
     // As the paramaters we support all the params in our Event Paramaters Section
     event: "ban",
 
-    execute(client, channel, username, userstate) {
+    execute({client, channel, username}) {
         // Now we will write a simple message out saying who was banned!
         client.say(channel, `${username} Was Banned!`)
     }
@@ -298,7 +300,7 @@ export default {
 
     modOnly: false,
 
-    execute(client, channel, userstate, message, self, args){
+    execute({client, channel, userstate, message, self, args}){
         client.say(channel, "Pong!")
     }
 } as TmiCommand
@@ -316,16 +318,18 @@ export default [
 
         modOnly: false,
 
-        execute(client, channel, userstate, message, self, args){
+        execute({client, channel, userstate, message, self, args}){
             client.say(channel, "Pong!")
+        }
     },
     {
         name: "token",
 
         modOnly: true,
 
-    execute(client, channel, userstate, message, self, args){
-        client.say(channel, "Pong!")
+        execute({client, channel, self, args}){
+            client.say(channel, "omg!")
+        }
     }
 ] as TmiCommand[]
 ```
