@@ -1,7 +1,30 @@
 import tmi from "tmi.js";
 import { TmiClientEvent } from "./anotherStuffINeed";
 
-type TwitchWrapperOptions = {
+export default class TwitchWrapper {
+    /**
+     * @constructor Main class for Wrapper
+     *
+     *
+     * @param {TwitchWrapperOptions} options Options for the Wrapper
+     */
+    public constructor(options: TwitchWrapperOptions);
+
+    /** @function Loads all commands. Default directory is /commands */
+    public loadCommands(commandPath?: string): Promise<this>;
+
+    /** @function Loads all events. Default directory is /events */
+    public loadEvents(eventPath?: string): Promise<this>;
+
+    /** @function Same as `loadCommands` but synchronous */
+    public loadCommandsSync(commandPath?: string): this;
+
+    /** @function Same as `loadEvents` but synchronous */
+    public loadEventsSync(commandPath?: string): this;
+}
+
+
+export declare interface TwitchWrapperOptions {
     /** Username of the bot you will use to connect to Twitch*/
     username: string;
 
@@ -52,29 +75,7 @@ type TwitchWrapperOptions = {
 
 }
 
-export default class TwitchWrapper {
-    /**
-     * @constructor Main class for Wrapper
-     *
-     *
-     * @param {TwitchWrapperOptions} options Options for the Wrapper
-     */
-    public constructor(options: TwitchWrapperOptions);
-
-    /** @function Loads all commands. Default directory is /commands */
-    public loadCommands(commandPath?: string): Promise<this>;
-
-    /** @function Loads all events. Default directory is /events */
-    public loadEvents(eventPath?: string): Promise<this>;
-
-    /** @function Same as `loadCommands` but synchronous */
-    public loadCommandsSync(commandPath?: string): this;
-
-    /** @function Same as `loadEvents` but synchronous */
-    public loadEventsSync(commandPath?: string): this;
-}
-
-type TmiInstanceMethods = {
+export declare interface TmiInstanceMethods {
     /** @function Returns all loaded commands, or an empty array if none */
     getLoadedCommands(): TmiCommand[];
 
@@ -104,7 +105,7 @@ type TmiInstanceMethods = {
     reLogin(): Promise<void>
 }
 
-type TmiCommandParameters = {
+export declare interface TmiCommandParameters {
     /** The client */
     client: tmi.Client,
     /** The channel that message was sent in */
@@ -119,9 +120,9 @@ type TmiCommandParameters = {
     args: string[],
     /** Class methods to use inside a command file */
     instance: TmiInstanceMethods;
-};
+}
 
-export type TmiCommand = {
+export declare type TmiCommand = {
     /** Name of the command
      * ```js
      * name: "ping" // command will be called as !ping
@@ -142,4 +143,5 @@ export type TmiCommand = {
 
 // HUGE thanks to iPhoneXVII#92 57 for helping me getting this to work
 
-export type TmiEvent = TmiClientEvent;
+export declare type TmiEvent = TmiClientEvent;
+

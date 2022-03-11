@@ -1,4 +1,4 @@
-module.exports = class log {
+module.exports = class Logger {
     constructor(options) {
         this.botName = options.botName || "Twitch Bot";
         this.colors = {
@@ -26,7 +26,8 @@ module.exports = class log {
     }
 
     loaded(type, fileName) {
-        if (this.fileName === null) return console.error("File name is not defined");
+        if (!fileName) return console.error("File name is not defined");
+        if (!type) return console.error("File name is not defined");
         console.log(this.colors.purple + "Loaded " + type + ": " + this.colors.green + fileName + "\x1b[0m");
     }
     totalLoaded(type, total) {
@@ -36,7 +37,7 @@ module.exports = class log {
     error(type, message, fileName) {
         if (this.fileName === null) return console.error("File name is not defined");
         console.log(
-            this.colors.red + "Error: " + this.colors.yellow + fileName + this.colors.red + ": " + this.colors.yellow + message
+            this.colors.red + type + " error: " + this.colors.yellow + fileName + this.colors.red + ": " + this.colors.yellow + message
         );
     }
     warn(type, message) {

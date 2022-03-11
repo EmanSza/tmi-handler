@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const log = require("./log");
+const log = require("../log");
 const eventReturn = require("./events");
 const tmi = require("tmi.js");
 
@@ -141,9 +141,9 @@ module.exports = class TwitchWrapper {
     loadCommands(commandPath = "/commands") {
         if (this.#commands.length) throw new TypeError("You have already loaded commands.");
 
-        if (this.loadCommandsPath) commandPath = this.loadCommandsPath;
+        if (this.#loadCommandsPath) commandPath = this.#loadCommandsPath;
 
-        this.loadCommandsPath ||= commandPath;
+        this.#loadCommandsPath ||= commandPath;
         return new Promise((resolve, reject) => {
             // Create a for loop that counts the amount of files in the directory
             try {
@@ -189,8 +189,8 @@ module.exports = class TwitchWrapper {
     }
     loadCommandsSync(commandPath = "/commands") {
         if (this.#commands.length) throw new TypeError("You have already loaded commands.");
-        if (this.loadCommandsPath) commandPath = this.loadCommandsPath;
-        this.loadCommandsPath ||= commandPath;
+        if (this.#loadCommandsPath) commandPath = this.#loadCommandsPath;
+        this.#loadCommandsPath ||= commandPath;
 
         // Create a for loop that counts the amount of files in the directory
         try {
@@ -260,9 +260,9 @@ module.exports = class TwitchWrapper {
         return;
     }
     loadEvents(eventPath = "/events") {
-        if (this.loadEventsPath) eventPath = this.loadEventsPath;
+        if (this.#loadEventsPath) eventPath = this.#loadEventsPath;
 
-        this.loadEventsPath ||= eventPath;
+        this.#loadEventsPath ||= eventPath;
         if (this.#events.length) throw new TypeError("You have already loaded events.");
         // Events Will be handled by name of the file, so if you have a file called test.js, it will be called test
         return new Promise((resolve, reject) => {
@@ -303,8 +303,8 @@ module.exports = class TwitchWrapper {
     }
 
     loadEventsSync(eventPath = "/events") {
-        if (this.loadEventsPath) eventPath = this.loadEventsPath;
-        this.loadEventsPath ||= eventPath;
+        if (this.#loadEventsPath) eventPath = this.#loadEventsPath;
+        this.#loadEventsPath ||= eventPath;
         if (this.#events.length) throw new TypeError("You have already loaded events.");
 
         let files = fs
@@ -348,12 +348,12 @@ module.exports = class TwitchWrapper {
             getLoadedEvents: () => this.#events,
             reloadCommands: async () => {
                 this.#commands = [];
-                await this.loadCommands(this.loadCommandsPath);
+                await this.loadCommands(this.#loadCommandsPath);
                 return this.#commands;
             },
             reloadEvents: async () => {
                 this.#events = [];
-                await this.loadEvents(this.loadCommandsPath);
+                await this.loadEvents(this.#loadCommandsPath);
                 return this.#events;
             },
             reLogin: () => {
