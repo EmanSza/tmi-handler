@@ -7,10 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
 
-  "exports": {
-    ".": { "require":"./src/index.js", "types": "./typings/index.d.ts"},
-    "./log": { "require": "./src/log.js", "types": "./typings/log.d.ts", "default": "./src/log.js"}
-  },
 
   "keywords": [
     "tmijs",
