@@ -17,7 +17,8 @@
     "tmi-handler",
     "command-handler",
     "handler",
-    "tmi-js"
+    "tmi-js",
+    "tmi.js"
   ],
   "author": "EmanSza",
   "license": "MIT",
