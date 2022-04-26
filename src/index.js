@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const log = require("../log");
-const eventReturn = require("./events");
 const tmi = require("tmi.js");
 
 module.exports = class TwitchWrapper {
@@ -38,69 +37,11 @@ module.exports = class TwitchWrapper {
         this.#commands = [];
         // The events array will hold all the events that are loaded
         this.#events = [];
-        // a array of event types that will be loaded
-        this.eventTypes = [
-            "action",
-            "anongiftpaidupgrade",
-            "ban",
-            "chat",
-            "cheer",
-            "clearchat",
-            "connected",
-            "connecting",
-            "cisconnected",
-            "emoteonly",
-            "emotesets",
-            "followersonly",
-            "giftpaidupgrade",
-            "hosted",
-            "hosting",
-            "join",
-            "logon",
-            "message",
-            "messagedeleted",
-            "mod",
-            "mods",
-            "notice",
-            "part",
-            "ping",
-            "pong",
-            "r9kbeta",
-            "saided",
-            "raw_message",
-            "reconnect",
-            "resub",
-            "roomstate",
-            "serverchange",
-            "slowmode",
-            "subgift",
-            "submysterygift",
-            "subscribers",
-            "subscription",
-            "timeout",
-            "unhost",
-            "unmod",
-            "vips",
-            "whisper",
-        ];
+
         this.cLog = new log({ botName: this.#username });
-        // If options are not defined throw errors`
-        if (this.commandPath) {
-            this.cLog.warn("Deprecation warning:", "commandPath option is deprecated, use .loadCommands() instead");
-        }
-        // if the user is using eventPath, throw an error
-        if (this.eventPath) {
-            this.cLog.warn("Deprecation warning:", "eventPath option is deprecated, use .loadEvents() instead");
-        }
-        if (!this.options.channels) {
-            throw new TypeError("Channels are not defined");
-        }
-        if (!this.options.username) {
-            throw new TypeError("Username is not defined");
-        }
-        if (!this.options.password) {
-            throw new TypeError("Password is not defined");
-        }
+
+        this.#checks();
+
         // If debug is true, log the following
         if (this.#debug) {
             console.log("Debug mode is on");
@@ -284,18 +225,14 @@ module.exports = class TwitchWrapper {
                                 reject(`Event ${eventObj.eventName} already exists`);
                                 break;
                             }
-                            // If the file name is in the eventTypes array, run the event
-                            if (this.eventTypes.includes(eventObj.eventName)) {
-                                this.#events.push(eventObj);
-                                this.cLog.loaded("Event", eventObj.eventName);
-                            } else {
-                                this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
-                            }
+                            this.#events.push(eventObj);
+                            this.client.on(eventObj.eventName, (...args) => {
+                                eventObj.execute(this.client, ...args);
+                                });
                         }
                     }
                 })
                 .then(() => {
-                    new eventReturn(this.client, this.#events, this.#selfDetection, this.cLog);
                     this.cLog.totalLoaded("Events", this.#events.length);
                     resolve(this);
                 });
@@ -324,13 +261,11 @@ module.exports = class TwitchWrapper {
                     reject(`Event ${eventObj.eventName} already exists`);
                     break;
                 }
-                // If the file name is in the eventTypes array, run the event
-                if (this.eventTypes.includes(eventObj.eventName)) {
-                    this.#events.push(eventObj);
-                    this.cLog.loaded("Event", eventObj.eventName);
-                } else {
-                    this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
+                this.#events.push(eventObj);
+                this.client.on(eventObj.eventName, (...args) => {
+                    eventObj.execute(this.client, ...args);
                 }
+                );
             }
         }
 
@@ -478,5 +413,24 @@ module.exports = class TwitchWrapper {
                 }
             });
         }
+    }
+    #checks() {
+                // If options are not defined throw errors`
+                if (this.commandPath) {
+                    this.cLog.warn("Deprecation warning:", "commandPath option is deprecated, use .loadCommands() instead");
+                }
+                // if the user is using eventPath, throw an error
+                if (this.eventPath) {
+                    this.cLog.warn("Deprecation warning:", "eventPath option is deprecated, use .loadEvents() instead");
+                }
+                if (!this.options.channels) {
+                    throw new TypeError("Channels are not defined");
+                }
+                if (!this.options.username) {
+                    throw new TypeError("Username is not defined");
+                }
+                if (!this.options.password) {
+                    throw new TypeError("Password is not defined");
+                }
     }
 };
