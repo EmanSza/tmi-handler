@@ -1,5 +1,7 @@
 # tmi-handler
 
+## TMI Handler Verison 2.0
+
 This is a Light Weight Handler for TMI.js, This handler Offers the following
 
 - Command Handling
