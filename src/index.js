@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const log = require("../log");
-const eventReturn = require("./events");
+const log = require("./log");
 const tmi = require("tmi.js");
 
 module.exports = class TwitchWrapper {
@@ -19,6 +18,8 @@ module.exports = class TwitchWrapper {
     #perCommandCooldowns;
     #commands;
     #events;
+    #loadCommandsPath;
+    #loadEventsPath;
     constructor(options) {
         // Constructor Options
         this.options = options;
@@ -38,69 +39,11 @@ module.exports = class TwitchWrapper {
         this.#commands = [];
         // The events array will hold all the events that are loaded
         this.#events = [];
-        // a array of event types that will be loaded
-        this.eventTypes = [
-            "action",
-            "anongiftpaidupgrade",
-            "ban",
-            "chat",
-            "cheer",
-            "clearchat",
-            "connected",
-            "connecting",
-            "cisconnected",
-            "emoteonly",
-            "emotesets",
-            "followersonly",
-            "giftpaidupgrade",
-            "hosted",
-            "hosting",
-            "join",
-            "logon",
-            "message",
-            "messagedeleted",
-            "mod",
-            "mods",
-            "notice",
-            "part",
-            "ping",
-            "pong",
-            "r9kbeta",
-            "saided",
-            "raw_message",
-            "reconnect",
-            "resub",
-            "roomstate",
-            "serverchange",
-            "slowmode",
-            "subgift",
-            "submysterygift",
-            "subscribers",
-            "subscription",
-            "timeout",
-            "unhost",
-            "unmod",
-            "vips",
-            "whisper",
-        ];
+
         this.cLog = new log({ botName: this.#username });
-        // If options are not defined throw errors`
-        if (this.commandPath) {
-            this.cLog.warn("Deprecation warning:", "commandPath option is deprecated, use .loadCommands() instead");
-        }
-        // if the user is using eventPath, throw an error
-        if (this.eventPath) {
-            this.cLog.warn("Deprecation warning:", "eventPath option is deprecated, use .loadEvents() instead");
-        }
-        if (!this.options.channels) {
-            throw new TypeError("Channels are not defined");
-        }
-        if (!this.options.username) {
-            throw new TypeError("Username is not defined");
-        }
-        if (!this.options.password) {
-            throw new TypeError("Password is not defined");
-        }
+
+        this.#checks();
+
         // If debug is true, log the following
         if (this.#debug) {
             console.log("Debug mode is on");
@@ -139,51 +82,12 @@ module.exports = class TwitchWrapper {
     }
 
     loadCommands(commandPath = "/commands") {
-        if (this.#commands.length) throw new TypeError("You have already loaded commands.");
-
-        if (this.#loadCommandsPath) commandPath = this.#loadCommandsPath;
-
-        this.#loadCommandsPath ||= commandPath;
         return new Promise((resolve, reject) => {
-            // Create a for loop that counts the amount of files in the directory
             try {
-                fs.promises
-                    .readdir(path.resolve(process.cwd() + commandPath), {
-                        withFileTypes: true,
-                    })
-                    .then(files => {
-                        // Loops through the files
-                        for (const file of files) {
-                            if (file.isDirectory()) {
-                                // Read the files in the directory
-                                this.#loadCommandsNoCLog(`${commandPath}/${file.name}`);
-                            }
-                            // If the File is a file, run the command
-                            else if (file.name.endsWith(this.#typeScript ? ".ts" : ".js")) {
-                                // require the file so we can get the command object
-                                let command = require(path.resolve(process.cwd() + commandPath + "/" + file.name));
-                                // Push the command into the commands array
-                                if (command.default) command = command.default;
-                                Array.isArray(command)
-                                    ? command.forEach(cmd => {
-                                          this.#commands.push(cmd);
-                                          this.cLog.loaded("Command", cmd.name);
-                                      })
-                                    : (() => {
-                                          this.#commands.push(command);
-                                          this.cLog.loaded("Command", command.name);
-                                      })();
-                                // Add up i to the amount of files from the scoped i variable
-                                // Log the Command being pushed into the array
-                            }
-                        }
-                    })
-                    .then(() => {
-                        this.cLog.totalLoaded("Commands", this.#commands.length);
-                        resolve(this);
-                    });
+                this.loadCommandsSync(commandPath);
+                resolve(this);
             } catch (err) {
-                reject("An error occurred while loading commands:", err);
+                reject(err);
             }
         });
     }
@@ -260,45 +164,13 @@ module.exports = class TwitchWrapper {
         return;
     }
     loadEvents(eventPath = "/events") {
-        if (this.#loadEventsPath) eventPath = this.#loadEventsPath;
-
-        this.#loadEventsPath ||= eventPath;
-        if (this.#events.length) throw new TypeError("You have already loaded events.");
-        // Events Will be handled by name of the file, so if you have a file called test.js, it will be called test
         return new Promise((resolve, reject) => {
-            fs.promises
-                .readdir(path.resolve(process.cwd() + eventPath), {
-                    withFileTypes: true,
-                })
-                .then(files => files.filter(file => file.name.endsWith(this.#typeScript ? ".ts" : ".js")))
-                .then(files => {
-                    for (const file of files) {
-                        if (file.isFile()) {
-                            let eventFile = require(path.resolve(process.cwd() + eventPath + "/" + file.name));
-                            console.log(eventFile);
-                            const eventObj = {
-                                eventName: eventFile.default?.event?.toLowerCase() || eventFile.event.toLowerCase(),
-                                execute: eventFile.default?.execute || eventFile.execute,
-                            };
-                            if (this.#events.some(e => e.eventName == eventObj.eventName)) {
-                                reject(`Event ${eventObj.eventName} already exists`);
-                                break;
-                            }
-                            // If the file name is in the eventTypes array, run the event
-                            if (this.eventTypes.includes(eventObj.eventName)) {
-                                this.#events.push(eventObj);
-                                this.cLog.loaded("Event", eventObj.eventName);
-                            } else {
-                                this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
-                            }
-                        }
-                    }
-                })
-                .then(() => {
-                    new eventReturn(this.client, this.#events, this.#selfDetection, this.cLog);
-                    this.cLog.totalLoaded("Events", this.#events.length);
-                    resolve(this);
-                });
+            try {
+                this.loadEventsSync(eventPath);
+                resolve(this);
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 
@@ -324,17 +196,14 @@ module.exports = class TwitchWrapper {
                     reject(`Event ${eventObj.eventName} already exists`);
                     break;
                 }
-                // If the file name is in the eventTypes array, run the event
-                if (this.eventTypes.includes(eventObj.eventName)) {
-                    this.#events.push(eventObj);
-                    this.cLog.loaded("Event", eventObj.eventName);
-                } else {
-                    this.cLog.error("Event", "Does Not Match a Event Type ", eventObj.eventName);
-                }
+                this.#events.push(eventObj);
+                this.client.on(eventObj.eventName, (...args) => {
+                    eventObj.execute(this.client, ...args);
+                });
+                this.cLog.loaded("Event", eventObj.eventName);
             }
         }
 
-        new eventReturn(this.client, this.#events, this.#selfDetection, this.cLog);
         this.cLog.totalLoaded("Events", this.#events.length);
         return this;
     }
@@ -382,89 +251,45 @@ module.exports = class TwitchWrapper {
         // If the 1st character of the message is a the prefix, run the command
         if (message.startsWith(this.#prefix)) {
             // Substring the message to remove the prefix
-            let args = message.toLowerCase().slice(this.#prefix.length).split(" ");
+            const args = message.toLowerCase().slice(this.#prefix.length).split(" ");
             // Get the command name
-            let commandName = args.shift();
+            const commandName = args.shift();
 
             // get each command in the commands array
-            this.#commands.forEach(command => {
-                // If the called command name is the same as the command name in the command object, run the command
-                if (command.name === commandName) {
-                    // If the command is mod only and the user is not a mod, return the message
-                    if (command.modOnly && !userstate.mod) {
-                        client.say(channel, "You do not have permission to use this command");
-                        return;
-                    }
+            const command = this.#commands.find(command => command.name == commandName);
+            if (!command) return;
+            // If the called command name is the same as the command name in the command object, run the command
+            if (command.name === commandName) {
+                // If the command is mod only and the user is not a mod, return the message
+                if (command.modOnly && !userstate.mod) {
+                    client.say(channel, "You do not have permission to use this command");
+                    return;
+                }
 
-                    // check if the command has a cooldown set
-                    if (command.cooldown) {
-                        // check if the user is in cooldown, and if it is, tell him
-                        if (this.#perCommandCooldowns[command.name]?.[userstate.id]) {
-                            client.say(
-                                channel,
-                                `You are in cooldown to use this command! Please wait ${new Date(
-                                    this.#perCommandCooldowns[command.name][userstate.id].timeLeft
-                                ).getSeconds()} seconds.`
-                            );
-                        } else {
-                            // if it's not, execute the command and add him to cooldowns list
-                            this.#perCommandCooldowns[command.name] = { [userstate.id]: { timeLeft: command.cooldown } };
+                // check if the command has a cooldown set
+                if (command.cooldown) {
+                    // check if the user is in cooldown, and if it is, tell him
+                    if (this.#perCommandCooldowns[command.name]?.[userstate["user-id"]]) {
+                        client.say(
+                            channel,
+                            `You are in cooldown to use this command! Please wait ${new Date(
+                                this.#perCommandCooldowns[command.name][userstate["user-id"]].timeLeft
+                            ).getSeconds()} seconds.`
+                        );
+                    } else {
+                        // if it's not, execute the command and add him to cooldowns list
+                        this.#perCommandCooldowns[command.name] = { [userstate["user-id"]]: { timeLeft: command.cooldown } };
 
-                            // this function delete the cooldown when it's over and update it every second
-                            let fish = setInterval(() => {
-                                if (this.#perCommandCooldowns[command.name][userstate.id].timeLeft <= 0) {
-                                    delete this.#perCommandCooldowns[command.name][userstate.id];
-                                    clearInterval(fish);
-                                } else {
-                                    this.#perCommandCooldowns[command.name][userstate.id].timeLeft -= 1000;
-                                }
-                            }, 1000);
-                            // Run the command with the arguments
-                            command.execute({
-                                client,
-                                channel,
-                                userstate,
-                                message,
-                                self,
-                                args,
-                                instance,
-                            });
-                        }
-                    }
-                    // if function doesn't have a cooldown, look for global cooldown instead
-                    else if (this.#globalCooldown) {
-                        // its the same thing as above lol
-                        if (this.#cooldowns[userstate.id]) {
-                            client.say(
-                                channel,
-                                `You are in cooldown to use commands! Please wait ${new Date(
-                                    this.#cooldowns[userstate.id].timeLeft
-                                ).getSeconds()} seconds.`
-                            );
-                        } else {
-                            this.#cooldowns[userstate.id] = { timeLeft: this.#globalCooldown };
-                            let fish = setInterval(() => {
-                                if (this.#cooldowns[userstate.id].timeLeft <= 0) {
-                                    delete this.#cooldowns[userstate.id];
-                                    clearInterval(fish);
-                                } else {
-                                    this.#cooldowns[userstate.id].timeLeft -= 1000;
-                                }
-                            }, 1000);
-                            // Run the command with the arguments
-                            command.execute({
-                                client,
-                                channel,
-                                userstate,
-                                message,
-                                self,
-                                args,
-                                instance,
-                            });
-                        }
-                    }
-                    // if no cooldown is set, just run the command normally
-                    else {
+                        // this function delete the cooldown when it's over and update it every second
+                        let fish = setInterval(() => {
+                            if (this.#perCommandCooldowns[command.name][userstate["user-id"]].timeLeft <= 0) {
+                                delete this.#perCommandCooldowns[command.name][userstate["user-id"]];
+                                clearInterval(fish);
+                            } else {
+                                this.#perCommandCooldowns[command.name][userstate["user-id"]].timeLeft -= 1000;
+                            }
+                        }, 1000);
+                        // Run the command with the arguments
                         command.execute({
                             client,
                             channel,
@@ -476,7 +301,70 @@ module.exports = class TwitchWrapper {
                         });
                     }
                 }
-            });
+                // if function doesn't have a cooldown, look for global cooldown instead
+                else if (this.#globalCooldown) {
+                    // its the same thing as above lol
+                    if (this.#cooldowns[userstate["user-id"]]) {
+                        client.say(
+                            channel,
+                            `You are in cooldown to use commands! Please wait ${new Date(
+                                this.#cooldowns[userstate["user-id"]].timeLeft
+                            ).getSeconds()} seconds.`
+                        );
+                    } else {
+                        this.#cooldowns[userstate["user-id"]] = { timeLeft: this.#globalCooldown };
+                        let fish = setInterval(() => {
+                            if (this.#cooldowns[userstate["user-id"]].timeLeft <= 0) {
+                                delete this.#cooldowns[userstate["user-id"]];
+                                clearInterval(fish);
+                            } else {
+                                this.#cooldowns[userstate["user-id"]].timeLeft -= 1000;
+                            }
+                        }, 1000);
+                        // Run the command with the arguments
+                        command.execute({
+                            client,
+                            channel,
+                            userstate,
+                            message,
+                            self,
+                            args,
+                            instance,
+                        });
+                    }
+                }
+                // if no cooldown is set, just run the command normally
+                else {
+                    command.execute({
+                        client,
+                        channel,
+                        userstate,
+                        message,
+                        self,
+                        args,
+                        instance,
+                    });
+                }
+            }
+        }
+    }
+    #checks() {
+        // If options are not defined throw errors`
+        if (this.commandPath) {
+            this.cLog.warn("Deprecation warning:", "commandPath option is deprecated, use .loadCommands() instead");
+        }
+        // if the user is using eventPath, throw an error
+        if (this.eventPath) {
+            this.cLog.warn("Deprecation warning:", "eventPath option is deprecated, use .loadEvents() instead");
+        }
+        if (!this.options.channels) {
+            throw new TypeError("Channels are not defined");
+        }
+        if (!this.options.username) {
+            throw new TypeError("Username is not defined");
+        }
+        if (!this.options.password) {
+            throw new TypeError("Password is not defined");
         }
     }
 };
