@@ -1,5 +1,4 @@
-import tmi from "tmi.js";
-import { TmiClientEvent } from "./anotherStuffINeed";
+import tmi, { Client, Events } from "tmi.js";
 
 export default class TwitchWrapper {
     /**
@@ -121,7 +120,6 @@ export declare interface TmiCommandParameters {
     /** Class methods to use inside a command file */
     instance: TmiInstanceMethods;
 }
-
 export declare type TmiCommand = {
     /** Name of the command
      * ```js
@@ -138,10 +136,12 @@ export declare type TmiCommand = {
 
     /** The function to run when command is called */
     execute(args: TmiCommandParameters): void | Promise<void>
+}
 
-};
+export declare type Awaitable<T> = Promise<T> | T;
 
-// HUGE thanks to iPhoneXVII#92 57 for helping me getting this to work
+export declare type MappedEvents = {
+    [K in keyof Events]: { event: K, execute: (...args: Parameters<Events[K]>) => Awaitable<void> }
+}
 
-export declare type TmiEvent = TmiClientEvent;
-
+export declare type TmiEvent = MappedEvents[keyof MappedEvents];
